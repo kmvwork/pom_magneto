@@ -2,21 +2,23 @@ import pytest
 from pages.eco_friendly_page import EcoFriendlyPage
 
 
-@pytest.mark.usefixtures("setup")
 class TestEcoFriendly:
 
     @pytest.fixture(autouse=True)
-    def setup_page(self):
-        self.page = EcoFriendlyPage(self.driver)
-        self.page.open("https://magento.softwaretestingboard.com/collections/eco-friendly.html")
+    def setup(self):
+        self.page = EcoFriendlyPage()
+
+    def test_category_title_present(self):
+        title = self.page.get_category_title()
+        assert title, "Category title should not be empty"
+        assert "Eco Friendly" in title, "Category title does not contain 'Eco Friendly'"
 
     def test_product_list_present(self):
-        assert self.page.find_elements(*EcoFriendlyPage.PRODUCT_LIST)
+        products = self.page.get_product_elements()
+        assert len(products) > 0, "No products found in eco-friendly category"
 
     def test_product_names(self):
         product_names = self.page.get_product_names()
-        assert len(product_names) > 0
-
-    def test_first_product_name(self):
-        product_names = self.page.get_product_names()
-        assert "Ana Running Short" in product_names[0]  # Replace with actual expected product name
+        assert len(product_names) > 0, "No product names found in eco-friendly category"
+        for name in product_names:
+            assert name, "Product name should not be empty"
